@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卓トレ 請求計算ツール</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --blue: #1a4fa0;
+    --blue-light: #2563c7;
+    --blue-pale: #e8f0fb;
+    --orange: #e87722;
+    --gray-100: #f5f6f8;
+    --gray-200: #e8eaed;
+    --gray-400: #9aa0ab;
+    --gray-700: #3c4148;
+    --gray-900: #1a1d21;
+    --white: #ffffff;
+    --green: #1a8a4a;
+    --green-light: #e6f4ec;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-900);
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
+
+  header {
+    background: var(--blue);
+    color: white;
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  header h1 {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+
+  header p {
+    font-size: 12px;
+    opacity: 0.75;
+    margin-top: 2px;
+  }
+
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 14px;
+    border: 1px solid var(--gray-200);
+  }
+
+  .card-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--blue);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    color: var(--gray-400);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+
+  input[type="text"], input[type="number"], select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: 7px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--gray-900);
+    background: var(--gray-100);
+    margin-bottom: 12px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--blue-light);
+    background: white;
+  }
+
+  .time-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .billing-box {
+    background: var(--blue-pale);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-top: 4px;
+  }
+
+  .billing-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    padding: 5px 0;
+    color: var(--gray-700);
+  }
+
+  .billing-row.deduct {
+    color: var(--green);
+  }
+
+  .billing-divider {
+    border: none;
+    border-top: 1px solid var(--gray-200);
+    margin: 8px 0;
+  }
+
+  .billing-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--blue);
+    padding-top: 4px;
+  }
+
+  .billing-total span:last-child {
+    font-family: 'DM Mono', monospace;
+  }
+
+  .amount {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 13px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  .btn:active { transform: scale(0.98); }
+
+  .btn-primary {
+    background: var(--orange);
+    color: white;
+  }
+
+  .btn-secondary {
+    background: var(--blue);
+    color: white;
+    margin-top: 10px;
+  }
+
+  .btn:hover { opacity: 0.9; }
+
+  .mail-box {
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 13px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: var(--gray-700);
+    margin-top: 12px;
+    font-family: 'Noto Sans JP', sans-serif;
+  }
+
+  .copy-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: 7px;
+    border: 1px solid var(--blue);
+    background: white;
+    color: var(--blue);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.15s;
+  }
+
+  .copy-btn:hover { background: var(--blue-pale); }
+  .copy-btn.copied { background: var(--green-light); border-color: var(--green); color: var(--green); }
+
+  .hidden { display: none; }
+
+  .note {
+    font-size: 11px;
+    color: var(--gray-400);
+    margin-top: -8px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .store-badge {
+    background: rgba(255,255,255,0.2);
+    border-radius: 5px;
+    padding: 3px 8px;
+    font-size: 11px;
+    margin-left: auto;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🏓 卓トレ 請求計算ツール</h1>
+    <p>利用時間を入力すると請求金額・メール文面を自動生成します</p>
+  </div>
+</header>
+
+<!-- 入力カード -->
+<div class="card">
+  <div class="card-title">① 利用情報の入力</div>
+
+  <label>会員名</label>
+  <input type="text" id="memberName" placeholder="例：山田 悦男">
+
+  <label>店舗</label>
+  <select id="storeName">
+    <option value="横浜東神奈川店">横浜東神奈川店</option>
+    <option value="横浜上大岡店">横浜上大岡店</option>
+    <option value="川崎宮前平店">川崎宮前平店</option>
+  </select>
+
+  <label>対象月</label>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+    <input type="number" id="targetMonth" placeholder="4" min="1" max="12" style="margin-bottom:0;width:80px;">
+    <span style="font-size:14px;color:var(--gray-700);">月</span>
+  </div>
+
+  <label>利用時間（時間）</label>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+    <input type="number" id="usageHours" placeholder="1.5" min="0" step="0.5" style="margin-bottom:0;">
+    <span style="font-size:14px;color:var(--gray-700);white-space:nowrap;">時間</span>
+  </div>
+  <p class="note">※0.5時間単位。最低利用1時間。例：1時間30分 → 1.5</p>
+
+  <button class="btn btn-primary" onclick="calculate()">計算する</button>
+</div>
+
+<!-- 計算結果カード -->
+<div class="card hidden" id="resultCard">
+  <div class="card-title">② 請求内訳</div>
+  <div class="billing-box">
+    <div class="billing-row">
+      <span>会員維持管理費（月額）</span>
+      <span class="amount">1,210円</span>
+    </div>
+    <div class="billing-row">
+      <span id="usageLabel">施設利用料</span>
+      <span class="amount" id="usageFee">—</span>
+    </div>
+    <div class="billing-row deduct">
+      <span>無料利用権（1時間分）</span>
+      <span class="amount">▲1,210円</span>
+    </div>
+    <hr class="billing-divider">
+    <div class="billing-total">
+      <span>請求合計</span>
+      <span id="totalFee">—</span>
+    </div>
+  </div>
+
+  <button class="btn btn-secondary" onclick="generateMail()">メール文面を生成する</button>
+</div>
+
+<!-- メール文面カード -->
+<div class="card hidden" id="mailCard">
+  <div class="card-title">③ メール文面</div>
+  <div class="mail-box" id="mailBody"></div>
+  <button class="copy-btn" id="copyBtn" onclick="copyMail()">📋 コピーする</button>
+</div>
+
+<script>
+let calcData = {};
+
+function calculate() {
+  const name = document.getElementById('memberName').value.trim() || '（お名前）';
+  const store = document.getElementById('storeName').value;
+  const monthNum = document.getElementById('targetMonth').value.trim();
+  const month = monthNum ? monthNum + '月' : '（対象月）';
+  const hoursInput = parseFloat(document.getElementById('usageHours').value) || 0;
+
+  // 上大岡店は1時間1,320円（30分660円）、それ以外は30分605円
+  const isKamiooka = store === '横浜上大岡店';
+  const ratePerSlot = isKamiooka ? 660 : 605;   // 30分単価
+  const freeCredit = isKamiooka ? 1320 : 1210;  // 無料利用権（1時間分）
+  const monthlyFee = 1210;                       // 月会費は共通
+
+  // 最低1時間
+  const billedHours = Math.max(hoursInput, 1);
+  // 0.5時間単位でスロット数
+  const slots = Math.round(billedHours / 0.5);
+  // 利用料合計
+  const usageFee = slots * ratePerSlot;
+  // 請求合計
+  const total = monthlyFee + usageFee - freeCredit;
+
+  // 表示用の時間文字列
+  const hoursWhole = Math.floor(billedHours);
+  const halfHour = (billedHours % 1 !== 0) ? '30分' : '';
+  const timeStr = hoursWhole > 0 ? `${hoursWhole}時間${halfHour}` : halfHour;
+
+  calcData = { name, store, month, billedHours, timeStr, slots, usageFee, total, monthlyFee, freeCredit, ratePerSlot };
+
+  // 表示
+  document.getElementById('usageLabel').textContent = `施設利用料（30分×${slots}コマ）`;
+  document.getElementById('usageFee').textContent = usageFee.toLocaleString() + '円';
+  document.getElementById('totalFee').textContent = total.toLocaleString() + '円';
+  // 無料利用権の金額も店舗に応じて更新
+  document.querySelector('.billing-row.deduct .amount').textContent = `▲${freeCredit.toLocaleString()}円`;
+
+  document.getElementById('resultCard').classList.remove('hidden');
+  document.getElementById('mailCard').classList.add('hidden');
+  document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth' });
+}
+
+function generateMail() {
+  const { name, store, month, slots, usageFee, total, monthlyFee, freeCredit, ratePerSlot, timeStr } = calcData;
+
+  const body =
+`${name}様
+
+お問い合わせいただきありがとうございます。
+${month}分のご請求金額についてご説明いたします。
+
+■ ご請求内訳
+
+・会員維持管理費（月額）　　　　 ${monthlyFee.toLocaleString()}円
+・施設利用料（30分×${slots}コマ）　${usageFee.toLocaleString()}円
+・無料利用権（1時間分）　　　　▲${freeCredit.toLocaleString()}円
+────────────────
+　合計　　　　　　　　　　　　${total.toLocaleString()}円
+
+会員維持管理費（1,210円）は毎月お支払いいただく月会費であり、利用料から差し引かれるものではございません。月会費の中に「1時間分の無料利用権」が含まれており、1時間を超えたご利用分について30分ごとに${ratePerSlot.toLocaleString()}円の追加料金が発生する仕組みとなっております。
+
+ご不明な点がございましたら、お気軽にお申し付けください。
+
+卓トレ${store}`;
+
+  document.getElementById('mailBody').textContent = body;
+  document.getElementById('mailCard').classList.remove('hidden');
+  document.getElementById('copyBtn').textContent = '📋 コピーする';
+  document.getElementById('copyBtn').classList.remove('copied');
+  document.getElementById('mailCard').scrollIntoView({ behavior: 'smooth' });
+}
+
+function copyMail() {
+  const text = document.getElementById('mailBody').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✅ コピーしました';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '📋 コピーする';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
