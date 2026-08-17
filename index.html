@@ -317,7 +317,7 @@ function calculate() {
   const isKamiooka = store === '横浜上大岡店';
   const ratePerSlot = isKamiooka ? 660 : 605;   // 30分単価
   const freeCredit = isKamiooka ? 1320 : 1210;  // 無料利用権（1時間分）
-  const monthlyFee = 1210;                       // 月会費は共通
+  const monthlyFee = isKamiooka ? 1320 : 1210;  // 会員維持管理費（月額）
 
   // 最低1時間
   const billedHours = Math.max(hoursInput, 1);
@@ -341,6 +341,7 @@ function calculate() {
   document.getElementById('totalFee').textContent = total.toLocaleString() + '円';
   // 無料利用権の金額も店舗に応じて更新
   document.querySelector('.billing-row.deduct .amount').textContent = `▲${freeCredit.toLocaleString()}円`;
+  document.querySelector('.billing-row .amount').textContent = `${monthlyFee.toLocaleString()}円`;
 
   document.getElementById('resultCard').classList.remove('hidden');
   document.getElementById('mailCard').classList.add('hidden');
@@ -364,7 +365,7 @@ ${month}分のご請求金額についてご説明いたします。
 ────────────────
 　合計　　　　　　　　　　　　${total.toLocaleString()}円
 
-会員維持管理費（1,210円）は毎月お支払いいただく月会費です。
+会員維持管理費（${monthlyFee.toLocaleString()}円）は毎月お支払いいただく月会費です。
 「1時間分の無料利用権」が含まれておりますが、その月で1時間以上ご利用された場合に適用されます。
 
 ご不明な点がございましたら、お気軽にお申し付けください。
